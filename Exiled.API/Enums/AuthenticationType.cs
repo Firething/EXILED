@@ -24,18 +24,23 @@ namespace Exiled.API.Enums
         Discord,
 
         /// <summary>
-        /// Indicates that the player has been authenticated as a Northwood staffer.
+        /// Indicates that the player has been authenticated as a Northwood staff member.
         /// </summary>
         Northwood,
-
-        /// <summary>
-        /// Indicates that the player has been authenticated as a Patreon.
-        /// </summary>
-        Patreon,
 
         /// <summary>
         /// Indicates that the player has been authenticated through an unknown provider.
         /// </summary>
         Unknown,
+
+        /// <summary>
+        /// Indicates that the player has been authenticated as localhost.
+        /// </summary>
+        LocalHost,
+
+        /// <summary>
+        /// Indicates that the player has been authenticated as DedicatedServer.
+        /// </summary>
+        DedicatedServer,
     }
 }

@@ -39,8 +39,8 @@ namespace Exiled.Events.Patches.Fixes
 
             Label cnt = generator.DefineLabel();
 
-            const int offset = -11;
-            int index = newInstructions.FindIndex(i => i.opcode == OpCodes.Stloc_0) + offset;
+            const int offset = 1;
+            int index = newInstructions.FindLastIndex(i => i.StoresField(Field(typeof(ThrowableItem), nameof(ThrowableItem._alreadyFired)))) + offset;
 
             newInstructions.RemoveRange(index, 11);
 
@@ -103,11 +103,6 @@ namespace Exiled.Events.Patches.Fixes
                 new(OpCodes.Callvirt, PropertyGetter(typeof(ThrownProjectile), nameof(ThrownProjectile.gameObject))),
                 new(OpCodes.Ldc_I4_1),
                 new(OpCodes.Callvirt, Method(typeof(GameObject), nameof(GameObject.SetActive))),
-
-                // projectile.Spawned = true;
-                new(OpCodes.Ldloc_S, projectile.LocalIndex),
-                new(OpCodes.Ldc_I4_1),
-                new(OpCodes.Callvirt, PropertySetter(typeof(Projectile), nameof(Projectile.IsSpawned))),
             });
 
             for (int z = 0; z < newInstructions.Count; z++)

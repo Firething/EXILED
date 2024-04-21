@@ -17,7 +17,7 @@ namespace Exiled.API.Features.DamageHandlers
     using BaseHandler = PlayerStatsSystem.DamageHandlerBase;
 
     /// <summary>
-    /// A wrapper to easily manipulate the behavior of <see cref="BaseHandler"/>.
+    /// A wrapper to easily manipulate the behavior of the <see cref="BaseHandler"/>.
     /// </summary>
     public class DamageHandler : DamageHandlerBase
     {
@@ -37,8 +37,8 @@ namespace Exiled.API.Features.DamageHandlers
         {
             Target = target;
             Attacker = attacker;
-            TargetFootprint = target == null ? default : target.Footprint;
-            AttackerFootprint = Attacker == null ? default : Attacker.Footprint;
+            TargetFootprint = target?.Footprint ?? default;
+            AttackerFootprint = Attacker?.Footprint ?? default;
         }
 
         /// <summary>
@@ -51,8 +51,8 @@ namespace Exiled.API.Features.DamageHandlers
         {
             Target = target;
             Attacker = baseHandler is PlayerStatsSystem.AttackerDamageHandler handler ? Player.Get(handler.Attacker.Hub) : null;
-            TargetFootprint = target == null ? default : target.Footprint;
-            AttackerFootprint = baseHandler is PlayerStatsSystem.AttackerDamageHandler handle ? handle.Attacker : Attacker?.Footprint ?? TargetFootprint;
+            TargetFootprint = target?.Footprint ?? default;
+            AttackerFootprint = baseHandler is PlayerStatsSystem.AttackerDamageHandler handle ? handle.Attacker : Attacker?.Footprint ?? default;
         }
 
         /// <summary>
@@ -143,7 +143,7 @@ namespace Exiled.API.Features.DamageHandlers
             AhpStat ahpModule = player.GetModule<AhpStat>();
             HealthStat healthModule = player.GetModule<HealthStat>();
 
-            if (Damage <= -1f)
+            if (Damage <= StandardDamageHandler.KillValue)
             {
                 ahpModule.CurValue = 0f;
                 healthModule.CurValue = 0f;

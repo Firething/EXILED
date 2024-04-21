@@ -30,12 +30,12 @@ namespace Exiled.Installer
         Undefined,
 
         /// <summary>
-        ///     Absolute path that is routed to AppData.
+        /// Absolute path that is routed to AppData.
         /// </summary>
         Absolute,
 
         /// <summary>
-        ///     Exiled path that is routed to exiled root path.
+        /// Exiled path that is routed to exiled root path.
         /// </summary>
         Exiled,
     }
@@ -55,14 +55,15 @@ namespace Exiled.Installer
         // Force use of LF because the file uses LF
         private static readonly Dictionary<string, string> Markup = Resources.Markup.Trim().Split('\n').ToDictionary(s => s.Split(':')[0], s => s.Split(':', 2)[1]);
 
-        private async static Task Main(string[] args)
+        private static async Task Main(string[] args)
         {
             Console.OutputEncoding = new UTF8Encoding(false, false);
             await CommandSettings.Parse(args).ConfigureAwait(false);
         }
 
-        internal async static Task MainSafe(CommandSettings args)
+        internal static async Task MainSafe(CommandSettings args)
         {
+            bool error = false;
             try
             {
                 Console.WriteLine(Header);
@@ -94,17 +95,12 @@ namespace Exiled.Installer
                 IEnumerable<Release> releases = await GetReleases().ConfigureAwait(false);
                 Console.WriteLine(Resources.Program_MainSafe_Searching_for_the_latest_release_that_matches_the_parameters___);
 
-                if (!TryFindRelease(args, releases, out Release? targetRelease))
-                {
-                    Console.WriteLine(Resources.Program_MainSafe_____RELEASES____);
-                    Console.WriteLine(string.Join(Environment.NewLine, releases.Select(FormatRelease)));
-                    throw new InvalidOperationException("Couldn't find release");
-                }
+                Release targetRelease = FindRelease(args, releases);
 
                 Console.WriteLine(Resources.Program_MainSafe_Release_found_);
                 Console.WriteLine(FormatRelease(targetRelease!));
 
-                ReleaseAsset exiledAsset = targetRelease!.Assets.FirstOrDefault(a => a.Name.Equals(ExiledAssetName, StringComparison.OrdinalIgnoreCase));
+                ReleaseAsset? exiledAsset = targetRelease!.Assets.FirstOrDefault(a => a.Name.Equals(ExiledAssetName, StringComparison.OrdinalIgnoreCase));
                 if (exiledAsset is null)
                 {
                     Console.WriteLine(Resources.Program_MainSafe_____ASSETS____);
@@ -115,10 +111,8 @@ namespace Exiled.Installer
                 Console.WriteLine(Resources.Program_MainSafe_Asset_found_);
                 Console.WriteLine(FormatAsset(exiledAsset));
 
-                using HttpClient httpClient = new()
-                {
-                    Timeout = TimeSpan.FromSeconds(SecondsWaitForDownload),
-                };
+                using HttpClient httpClient = new();
+                httpClient.Timeout = TimeSpan.FromSeconds(SecondsWaitForDownload);
                 httpClient.DefaultRequestHeaders.Add("User-Agent", Header);
 
                 using HttpResponseMessage downloadResult = await httpClient.GetAsync(exiledAsset.BrowserDownloadUrl).ConfigureAwait(false);
@@ -145,15 +139,15 @@ namespace Exiled.Installer
             }
 
             if (args.Exit)
-                Environment.Exit(0);
+                Environment.Exit(error ? 1 : 0);
         }
 
-        private async static Task<IEnumerable<Release>> GetReleases()
+        private static async Task<IEnumerable<Release>> GetReleases()
         {
             IEnumerable<Release> releases = (await GitHubClient.Repository.Release.GetAll(RepoID).ConfigureAwait(false))
                 .Where(
                     r => Version.TryParse(r.TagName, out Version version)
-                         && (version > VersionLimit));
+                         && version > VersionLimit);
 
             return releases.OrderByDescending(r => r.CreatedAt.Ticks);
         }
@@ -180,6 +174,11 @@ namespace Exiled.Installer
 
         private static void ProcessTarEntry(CommandSettings args, TarInputStream tarInputStream, TarEntry entry)
         {
+            if (entry.Name.Contains("global") && args.TargetPort is not null)
+            {
+                entry.Name = entry.Name.Replace("global", args.TargetPort);
+            }
+
             if (entry.IsDirectory)
             {
                 TarEntry[] entries = entry.GetDirectoryEntries();
@@ -266,7 +265,8 @@ namespace Exiled.Installer
                 {
                     return TryParse(pair.Value);
                 }
-                else if (!fileInFolder && !isFolder &&
+
+                if (!fileInFolder && !isFolder &&
                          pair.Key.Equals(fileName, StringComparison.OrdinalIgnoreCase))
                 {
                     return TryParse(pair.Value);
@@ -276,24 +276,30 @@ namespace Exiled.Installer
             return PathResolution.Undefined;
         }
 
-        private static bool TryFindRelease(CommandSettings args, IEnumerable<Release> releases, out Release? release)
+        private static Release FindRelease(CommandSettings args, IEnumerable<Release> releases)
         {
             Console.WriteLine(Resources.Program_TryFindRelease_Trying_to_find_release__);
-            Version targetVersion = args.TargetVersion is not null ? new Version(args.TargetVersion) : VersionLimit;
+            Version? targetVersion = args.TargetVersion is not null ? new Version(args.TargetVersion) : null;
 
-            foreach (Release r in releases)
+            List<Release> enumerable = releases.ToList();
+
+            foreach (Release release in enumerable)
             {
-                release = r;
+                if (targetVersion != null)
+                {
+                    if (targetVersion == new Version(release.TagName))
+                        return release;
+                }
+                else
+                {
+                    if (release.Prerelease && !args.PreReleases)
+                        continue;
 
-                if (targetVersion == new Version(r.TagName))
-                    return true;
-
-                if ((r.Prerelease && args.PreReleases) || !r.Prerelease)
-                    return true;
+                    return release;
+                }
             }
 
-            release = null;
-            return false;
+            return enumerable.First();
         }
     }
 }

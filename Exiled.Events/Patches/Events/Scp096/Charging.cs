@@ -12,7 +12,7 @@ namespace Exiled.Events.Patches.Events.Scp096
 
     using API.Features;
     using API.Features.Pools;
-
+    using Exiled.Events.Attributes;
     using Exiled.Events.EventArgs.Scp096;
 
     using HarmonyLib;
@@ -20,14 +20,15 @@ namespace Exiled.Events.Patches.Events.Scp096
     using Mirror;
 
     using PlayerRoles.PlayableScps.Scp096;
-    using PlayerRoles.PlayableScps.Subroutines;
+    using PlayerRoles.Subroutines;
 
     using static HarmonyLib.AccessTools;
 
     /// <summary>
-    ///     Patches <see cref="Scp096ChargeAbility.ServerProcessCmd(NetworkReader)" />.
-    ///     Adds the <see cref="Handlers.Scp096.Charging" /> event.
+    /// Patches <see cref="Scp096ChargeAbility.ServerProcessCmd(NetworkReader)" />.
+    /// Adds the <see cref="Handlers.Scp096.Charging" /> event.
     /// </summary>
+    [EventPatch(typeof(Handlers.Scp096), nameof(Handlers.Scp096.Charging))]
     [HarmonyPatch(typeof(Scp096ChargeAbility), nameof(Scp096ChargeAbility.ServerProcessCmd))]
     internal static class Charging
     {
@@ -40,29 +41,19 @@ namespace Exiled.Events.Patches.Events.Scp096
             const int offset = 1;
             int index = newInstructions.FindIndex(instruction => instruction.opcode == OpCodes.Ret) + offset;
 
-            // ChargingEventArgs ev = new ChargingEventArgs(this, Player, true);
-            //
-            // Handlers.Scp096.OnCharging(ev);
-            //
-            // if (!ev.IsAllowed)
-            //     return;
             newInstructions.InsertRange(
                 index,
                 new[]
                 {
-                    // base.ScpRole
-                    new CodeInstruction(OpCodes.Ldarg_0).MoveLabelsFrom(newInstructions[index]),
-                    new(OpCodes.Call, PropertyGetter(typeof(ScpStandardSubroutine<Scp096Role>), nameof(ScpStandardSubroutine<Scp096Role>.ScpRole))),
-
                     // Player.Get(base.Owner)
-                    new(OpCodes.Ldarg_0),
-                    new(OpCodes.Call, PropertyGetter(typeof(ScpStandardSubroutine<Scp096Role>), nameof(ScpStandardSubroutine<Scp096Role>.Owner))),
+                    new CodeInstruction(OpCodes.Ldarg_0).MoveLabelsFrom(newInstructions[index]),
+                    new(OpCodes.Call, PropertyGetter(typeof(StandardSubroutine<Scp096Role>), nameof(StandardSubroutine<Scp096Role>.Owner))),
                     new(OpCodes.Call, Method(typeof(Player), nameof(Player.Get), new[] { typeof(ReferenceHub) })),
 
                     // true
                     new(OpCodes.Ldc_I4_1),
 
-                    // ChargingEventArgs ev = new(Scp096Role, Player, bool)
+                    // ChargingEventArgs ev = new(scp096, true)
                     new(OpCodes.Newobj, GetDeclaredConstructors(typeof(ChargingEventArgs))[0]),
                     new(OpCodes.Dup),
 

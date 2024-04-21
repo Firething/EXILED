@@ -18,6 +18,7 @@ namespace Exiled.Loader
 
     using Exiled.API.Features;
     using Exiled.API.Features.Pools;
+
     using YamlDotNet.Core;
 
     /// <summary>
@@ -26,7 +27,7 @@ namespace Exiled.Loader
     public static class TranslationManager
     {
         /// <summary>
-        /// Loads all plugin translations.
+        /// Loads all of the plugin's translations.
         /// </summary>
         /// <param name="rawTranslations">The raw translations to be loaded.</param>
         /// <returns>Returns a dictionary of loaded translations.</returns>
@@ -80,7 +81,7 @@ namespace Exiled.Loader
         };
 
         /// <summary>
-        /// Reads, Loads and Saves plugin translations.
+        /// Reads, loads, and saves plugin translations.
         /// </summary>
         /// <returns>Returns a value indicating if the reloading process has been completed successfully or not.</returns>
         public static bool Reload() => Save(Load(Read()));

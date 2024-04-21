@@ -17,11 +17,15 @@ namespace Exiled.API.Features.Roles
     using PlayerStatsSystem;
     using RelativePositioning;
 
+    using UnityEngine;
+
     /// <summary>
     /// Defines a role that represents an fpc class.
     /// </summary>
     public abstract class FpcRole : Role
     {
+        private bool isUsingStamina = true;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="FpcRole"/> class.
         /// </summary>
@@ -49,6 +53,15 @@ namespace Exiled.API.Features.Roles
         {
             get => FirstPersonController.FpcModule.Motor.ReceivedPosition;
             set => FirstPersonController.FpcModule.Motor.ReceivedPosition = value;
+        }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether if a rotation is detected on the player.
+        /// </summary>
+        public bool RotationDetected
+        {
+            get => FirstPersonController.FpcModule.Motor.RotationDetected;
+            set => FirstPersonController.FpcModule.Motor.RotationDetected = value;
         }
 
         /// <summary>
@@ -88,6 +101,24 @@ namespace Exiled.API.Features.Roles
         }
 
         /// <summary>
+        /// Gets or sets the <see cref="Player"/> velocity.
+        /// </summary>
+        public Vector3 Velocity
+        {
+            get => FirstPersonController.FpcModule.Motor.Velocity;
+            set => FirstPersonController.FpcModule.Motor.Velocity = value;
+        }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether if a movement is detected on a <see cref="Player"/>.
+        /// </summary>
+        public bool MovementDetected
+        {
+            get => FirstPersonController.FpcModule.Motor.MovementDetected;
+            set => FirstPersonController.FpcModule.Motor.MovementDetected = value;
+        }
+
+        /// <summary>
         /// Gets a value indicating whether or not the player can send inputs.
         /// </summary>
         public bool CanSendInputs => FirstPersonController.FpcModule.LockMovement;
@@ -96,6 +127,30 @@ namespace Exiled.API.Features.Roles
         /// Gets or sets a value indicating whether or not the player is invisible.
         /// </summary>
         public bool IsInvisible { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether or not the player should use stamina system. Resets on death.
+        /// </summary>
+        public bool IsUsingStamina
+        {
+            get => isUsingStamina;
+            set
+            {
+                if (!value)
+                    Owner.ResetStamina();
+                isUsingStamina = value;
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the stamina usage multiplier. Resets on death.
+        /// </summary>
+        public float StaminaUsageMultiplier { get; set; } = 1f;
+
+        /// <summary>
+        /// Gets or sets the stamina regen multiplier. Resets on death.
+        /// </summary>
+        public float StaminaRegenMultiplier { get; set; } = 1f;
 
         /// <summary>
         /// Gets a list of players who can't see the player.
@@ -132,6 +187,21 @@ namespace Exiled.API.Features.Roles
         public bool IsInDarkness => FirstPersonController.InDarkness;
 
         /// <summary>
+        /// Gets the <see cref="Player"/>'s vertical rotation.
+        /// </summary>
+        public float VerticalRotation => FirstPersonController.VerticalRotation;
+
+        /// <summary>
+        /// Gets the <see cref="Player"/>'s horizontal rotation.
+        /// </summary>
+        public float HorizontalRotation => FirstPersonController.HorizontalRotation;
+
+        /// <summary>
+        /// Gets a value indicating whether or not the <see cref="Player"/> is AFK.
+        /// </summary>
+        public bool IsAfk => FirstPersonController.IsAFK;
+
+        /// <summary>
         /// Gets a value indicating whether or not this role is protected by a hume shield.
         /// </summary>
         public bool IsHumeShieldedRole => this is IHumeShieldRole;
@@ -146,6 +216,21 @@ namespace Exiled.API.Features.Roles
         {
             get => Owner.ReferenceHub.playerStats.GetModule<AdminFlagsStat>().HasFlag(AdminFlags.Noclip);
             set => Owner.ReferenceHub.playerStats.GetModule<AdminFlagsStat>().SetFlag(AdminFlags.Noclip, value);
+        }
+
+        /// <summary>
+        /// Resets the <see cref="Player"/>'s stamina.
+        /// </summary>
+        /// <param name="multipliers">Resets <see cref="StaminaUsageMultiplier"/> and <see cref="StaminaRegenMultiplier"/>.</param>
+        public void ResetStamina(bool multipliers = false)
+        {
+            Owner.Stamina = Owner.StaminaStat.MaxValue;
+
+            if (!multipliers)
+                return;
+
+            StaminaUsageMultiplier = 1f;
+            StaminaRegenMultiplier = 1f;
         }
     }
 }

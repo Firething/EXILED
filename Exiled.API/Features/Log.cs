@@ -9,20 +9,17 @@ namespace Exiled.API.Features
 {
     using System;
     using System.Collections.Generic;
-    using System.Linq;
     using System.Reflection;
 
-    using Interfaces;
-
     /// <summary>
-    /// A set of tools to print messages on the server console.
+    /// A set of tools to print messages to the server console.
     /// </summary>
     public static class Log
     {
         /// <summary>
-        /// Keep in memory the value of the Debug config.
+        /// Gets a <see cref="HashSet{T}"/> of plugin assemblies that have debug logs enabled.
         /// </summary>
-        internal static readonly Dictionary<Assembly, bool> KnownDebugValues = new();
+        public static HashSet<Assembly> DebugEnabled { get; } = new();
 
         /// <summary>
         /// Sends a <see cref="Discord.LogLevel.Info"/> level messages to the game console.
@@ -41,7 +38,21 @@ namespace Exiled.API.Features
         /// Server must have exiled_debug config enabled.
         /// </summary>
         /// <param name="message">The message to be sent.</param>
-        public static void Debug(object message) => Debug(message.ToString());
+        public static void Debug(object message)
+        {
+            Assembly callingAssembly = Assembly.GetCallingAssembly();
+
+#if DEBUG
+            if (callingAssembly.GetName().Name is "Exiled.API")
+            {
+                Send($"[{callingAssembly.GetName().Name}] {message}", Discord.LogLevel.Debug, ConsoleColor.Green);
+                return;
+            }
+#endif
+
+            if (DebugEnabled.Contains(callingAssembly))
+                Send($"[{callingAssembly.GetName().Name}] {message}", Discord.LogLevel.Debug, ConsoleColor.Green);
+        }
 
         /// <summary>
         /// Sends a <see cref="Discord.LogLevel.Debug"/> level messages to the game console.
@@ -72,15 +83,8 @@ namespace Exiled.API.Features
                 return;
             }
 #endif
-            if (!KnownDebugValues.ContainsKey(callingAssembly))
-            {
-                if (!Server.PluginAssemblies.ContainsKey(callingAssembly))
-                    SetDebugThroughReflection(callingAssembly);
-                else
-                    KnownDebugValues.Add(callingAssembly, Server.PluginAssemblies[callingAssembly].Config.Debug);
-            }
 
-            if (KnownDebugValues[callingAssembly])
+            if (DebugEnabled.Contains(callingAssembly))
                 Send($"[{callingAssembly.GetName().Name}] {message}", Discord.LogLevel.Debug, ConsoleColor.Green);
         }
 
@@ -152,8 +156,8 @@ namespace Exiled.API.Features
         /// Sends an <see cref="Error(object)"/> with the provided message if the condition is false and stops the execution.
         /// <example> For example:
         /// <code>
-        ///     Player ply = Player.Get(2);
-        ///     Log.Assert(ply is not null, "The player with the id 2 is null");
+        /// Player ply = Player.Get(2);
+        /// Log.Assert(ply is not null, "The player with the id 2 is null");
         /// </code>
         /// results in it logging an error if the player is null and not continuing.
         /// </example>
@@ -169,20 +173,6 @@ namespace Exiled.API.Features
             Error(message);
 
             throw new Exception(message.ToString());
-        }
-
-        private static void SetDebugThroughReflection(Assembly assembly)
-        {
-            try
-            {
-                IPlugin<IConfig> eventsPlugin = Server.PluginAssemblies.Values.FirstOrDefault(p => p.Name == "Exiled.Events");
-                KnownDebugValues.Add(assembly, eventsPlugin?.Config.Debug ?? false);
-            }
-            catch (Exception e)
-            {
-                Error(e);
-                KnownDebugValues.Add(assembly, false);
-            }
         }
     }
 }

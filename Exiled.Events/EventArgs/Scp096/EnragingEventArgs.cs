@@ -8,56 +8,49 @@
 namespace Exiled.Events.EventArgs.Scp096
 {
     using API.Features;
-
+    using Exiled.API.Features.Roles;
     using Interfaces;
 
-    using PlayerRoles.PlayableScps.Scp096;
-
     /// <summary>
-    ///     Contains all information before SCP-096 gets enraged.
+    /// Contains all information before SCP-096 gets enraged.
     /// </summary>
-    public class EnragingEventArgs : IPlayerEvent, IDeniableEvent
+    public class EnragingEventArgs : IScp096Event, IDeniableEvent
     {
         /// <summary>
-        ///     Initializes a new instance of the <see cref="EnragingEventArgs" /> class.
+        /// Initializes a new instance of the <see cref="EnragingEventArgs" /> class.
         /// </summary>
-        /// <param name="scp096">
-        ///     <inheritdoc cref="Scp096" />
-        /// </param>
         /// <param name="player">
-        ///     <inheritdoc cref="Player" />
+        /// <inheritdoc cref="Player" />
         /// </param>
         /// <param name="initialDuration">
-        ///     <inheritdoc cref="InitialDuration" />
+        /// <inheritdoc cref="InitialDuration" />
         /// </param>
         /// <param name="isAllowed">
-        ///     <inheritdoc cref="IsAllowed" />
+        /// <inheritdoc cref="IsAllowed" />
         /// </param>
-        public EnragingEventArgs(Scp096Role scp096, Player player, float initialDuration, bool isAllowed = true)
+        public EnragingEventArgs(Player player, float initialDuration, bool isAllowed = true)
         {
-            Scp096 = scp096;
             Player = player;
+            Scp096 = player.Role.As<Scp096Role>();
             InitialDuration = initialDuration;
             IsAllowed = isAllowed;
         }
 
-        /// <summary>
-        ///     Gets the SCP-096 instance.
-        /// </summary>
+        /// <inheritdoc/>
         public Scp096Role Scp096 { get; }
 
         /// <summary>
-        ///     Gets the player who's controlling SCP-096.
+        /// Gets the player who's controlling SCP-096.
         /// </summary>
         public Player Player { get; }
 
         /// <summary>
-        ///     Gets or sets the SCP-096 rage initial duration.
+        /// Gets or sets the SCP-096 rage initial duration.
         /// </summary>
         public float InitialDuration { get; set; }
 
         /// <summary>
-        ///     Gets or sets a value indicating whether or not SCP-096 can be enraged.
+        /// Gets or sets a value indicating whether or not SCP-096 can be enraged.
         /// </summary>
         public bool IsAllowed { get; set; }
     }

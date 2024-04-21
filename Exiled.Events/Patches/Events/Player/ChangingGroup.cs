@@ -12,6 +12,7 @@ namespace Exiled.Events.Patches.Events.Player
 
     using API.Features;
     using API.Features.Pools;
+    using Exiled.Events.Attributes;
     using Exiled.Events.EventArgs.Player;
 
     using HarmonyLib;
@@ -21,15 +22,18 @@ namespace Exiled.Events.Patches.Events.Player
     using static HarmonyLib.AccessTools;
 
     /// <summary>
-    ///     Patches <see cref="ServerRoles.SetGroup(UserGroup, bool, bool, bool)" />.
-    ///     Adds the <see cref="ChangingGroup" /> event.
+    /// Patches <see cref="ServerRoles.SetGroup(UserGroup, bool, bool)" />.
+    /// Adds the <see cref="Handlers.Player.ChangingGroup" /> event.
     /// </summary>
+    [EventPatch(typeof(Handlers.Player), nameof(Handlers.Player.ChangingGroup))]
     [HarmonyPatch(typeof(ServerRoles), nameof(ServerRoles.SetGroup))]
     internal static class ChangingGroup
     {
         private static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
         {
             List<CodeInstruction> newInstructions = ListPool<CodeInstruction>.Pool.Get(instructions);
+
+            LocalBuilder ev = generator.DeclareLocal(typeof(ChangingGroupEventArgs));
 
             Label returnLabel = generator.DefineLabel();
 
@@ -39,8 +43,12 @@ namespace Exiled.Events.Patches.Events.Player
 
             // ChangingGroupEventArgs ev = new(Player.Get(this.gameObject), group, true);
             //
+            // Handlers.Player.OnChangingGroup(ev);
+            //
             // if (!ev.IsAllowed)
             //     return;
+            //
+            // group = ev.NewGroup;
             newInstructions.InsertRange(
                 index,
                 new[]
@@ -59,14 +67,21 @@ namespace Exiled.Events.Patches.Events.Player
                     // ChangingGroupEventArgs ev = new(Player, UserGroup, bool);
                     new(OpCodes.Newobj, GetDeclaredConstructors(typeof(ChangingGroupEventArgs))[0]),
                     new(OpCodes.Dup),
+                    new(OpCodes.Stloc_S, ev),
 
-                    // Handlers.Player.OnChangingGroup(ev)
+                    // Handlers.Player.OnChangingGroup(ev);
+                    new(OpCodes.Dup),
                     new(OpCodes.Call, Method(typeof(Handlers.Player), nameof(Handlers.Player.OnChangingGroup))),
 
                     // if (!ev.IsAllowed)
                     //     return;
                     new(OpCodes.Callvirt, PropertyGetter(typeof(ChangingGroupEventArgs), nameof(ChangingGroupEventArgs.IsAllowed))),
                     new(OpCodes.Brfalse_S, returnLabel),
+
+                    // group = ev.NewGroup;
+                    new(OpCodes.Ldloc_S, ev),
+                    new(OpCodes.Callvirt, PropertyGetter(typeof(ChangingGroupEventArgs), nameof(ChangingGroupEventArgs.NewGroup))),
+                    new(OpCodes.Starg_S, 1),
                 });
 
             newInstructions[newInstructions.Count - 1].WithLabels(returnLabel);

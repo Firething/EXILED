@@ -21,7 +21,7 @@ namespace Exiled.API.Features.DamageHandlers
     using UnityEngine;
 
     /// <summary>
-    /// Allows generic damage to player.
+    /// Allows generic damage to a player.
     /// </summary>
     public class GenericDamageHandler : CustomReasonDamageHandler
     {
@@ -148,6 +148,12 @@ namespace Exiled.API.Features.DamageHandlers
                 case DamageType.Com45:
                     GenericFirearm(player, attacker, damage, damageType, ItemType.GunCom45);
                     break;
+                case DamageType.Frmg0:
+                    GenericFirearm(player, attacker, damage, damageType, ItemType.GunFRMG0);
+                    break;
+                case DamageType.A7:
+                    GenericFirearm(player, attacker, damage, damageType, ItemType.GunA7);
+                    break;
                 case DamageType.ParticleDisruptor:
                     Base = new DisruptorDamageHandler(Attacker, damage);
                     break;
@@ -165,7 +171,7 @@ namespace Exiled.API.Features.DamageHandlers
                     if (curr939 != null)
                         curr939._lastOwner = attacker.ReferenceHub;
 
-                    Base = new Scp939DamageHandler(curr939, Scp939DamageType.LungeTarget) { Damage = damage, };
+                    Base = new Scp939DamageHandler(curr939, damage, Scp939DamageType.LungeTarget);
                     break;
                 case DamageType.Scp:
                     Base = new PlayerStatsSystem.ScpDamageHandler(attacker.ReferenceHub, damage, DeathTranslations.Unknown);
@@ -197,12 +203,12 @@ namespace Exiled.API.Features.DamageHandlers
         }
 
         /// <summary>
-        /// Gets or sets custom base.
+        /// Gets or sets a custom base.
         /// </summary>
         public PlayerStatsSystem.DamageHandlerBase Base { get; set; }
 
         /// <summary>
-        /// Gets or sets current attacker.
+        /// Gets or sets the current attacker.
         /// </summary>
         public Footprint Attacker { get; set; }
 

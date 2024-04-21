@@ -11,7 +11,7 @@ namespace Exiled.Events.Patches.Events.Item
     using System.Reflection.Emit;
 
     using API.Features.Pools;
-
+    using Exiled.Events.Attributes;
     using Exiled.Events.EventArgs.Item;
 
     using Handlers;
@@ -27,10 +27,11 @@ namespace Exiled.Events.Patches.Events.Item
     using Player = API.Features.Player;
 
     /// <summary>
-    ///     Patches
-    ///     <see cref="AttachmentsServerHandler.ServerReceivePreference(NetworkConnection, AttachmentsSetupPreference)" />.
-    ///     Adds the <see cref="Item.ReceivingPreference" /> event.
+    /// Patches
+    /// <see cref="AttachmentsServerHandler.ServerReceivePreference(NetworkConnection, AttachmentsSetupPreference)" />.
+    /// Adds the <see cref="Item.ReceivingPreference" /> event.
     /// </summary>
+    [EventPatch(typeof(Item), nameof(Item.ReceivingPreference))]
     [HarmonyPatch(typeof(AttachmentsServerHandler), nameof(AttachmentsServerHandler.ServerReceivePreference))]
     internal static class ReceivingPreference
     {

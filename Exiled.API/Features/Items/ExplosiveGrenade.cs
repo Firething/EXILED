@@ -11,12 +11,10 @@ namespace Exiled.API.Features.Items
 
     using Exiled.API.Features.Pickups;
     using Exiled.API.Features.Pickups.Projectiles;
-    using Exiled.API.Interfaces;
 
     using InventorySystem.Items;
     using InventorySystem.Items.Pickups;
     using InventorySystem.Items.ThrowableProjectiles;
-
     using UnityEngine;
 
     using Object = UnityEngine.Object;
@@ -119,7 +117,7 @@ namespace Exiled.API.Features.Items
 #endif
             ItemPickupBase ipb = Object.Instantiate(Projectile.Base, position, Quaternion.identity);
 
-            ipb.Info = new PickupSyncInfo(Type, position, Quaternion.identity, Weight, ItemSerialGenerator.GenerateNext());
+            ipb.Info = new PickupSyncInfo(Type, Weight, ItemSerialGenerator.GenerateNext());
 
             ExplosionGrenadeProjectile grenade = (ExplosionGrenadeProjectile)Pickup.Get(ipb);
 
@@ -162,5 +160,20 @@ namespace Exiled.API.Features.Items
             PinPullTime = PinPullTime,
             Repickable = Repickable,
         };
+
+        /// <inheritdoc/>
+        internal override void ReadPickupInfo(Pickup pickup)
+        {
+            base.ReadPickupInfo(pickup);
+            if (pickup is ExplosiveGrenadePickup explosiveGrenadePickup)
+            {
+                MaxRadius = explosiveGrenadePickup.MaxRadius;
+                ScpDamageMultiplier = explosiveGrenadePickup.ScpDamageMultiplier;
+                BurnDuration = explosiveGrenadePickup.BurnDuration;
+                DeafenDuration = explosiveGrenadePickup.DeafenDuration;
+                ConcussDuration = explosiveGrenadePickup.ConcussDuration;
+                FuseTime = explosiveGrenadePickup.FuseTime;
+            }
+        }
     }
 }

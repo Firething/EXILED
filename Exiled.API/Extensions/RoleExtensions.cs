@@ -39,7 +39,7 @@ namespace Exiled.API.Extensions
         /// </summary>
         /// <param name="roleType">The <see cref="RoleTypeId"/> to check the side of.</param>
         /// <returns><see cref="Side"/>.</returns>
-        public static Side GetSide(this RoleTypeId roleType) => GetTeam(roleType).GetSide();
+        public static Side GetSide(this RoleTypeId roleType) => PlayerRolesUtils.GetTeam(roleType).GetSide();
 
         /// <summary>
         /// Gets a <see cref="Team">team's</see> <see cref="Side"/>.
@@ -65,7 +65,7 @@ namespace Exiled.API.Extensions
             RoleTypeId.ChaosConscript or RoleTypeId.ChaosMarauder or RoleTypeId.ChaosRepressor or RoleTypeId.ChaosRifleman => Team.ChaosInsurgency,
             RoleTypeId.Scientist => Team.Scientists,
             RoleTypeId.ClassD => Team.ClassD,
-            RoleTypeId.Scp049 or RoleTypeId.Scp939 or RoleTypeId.Scp0492 or RoleTypeId.Scp079 or RoleTypeId.Scp096 or RoleTypeId.Scp106 or RoleTypeId.Scp173 => Team.SCPs,
+            RoleTypeId.Scp049 or RoleTypeId.Scp939 or RoleTypeId.Scp0492 or RoleTypeId.Scp079 or RoleTypeId.Scp096 or RoleTypeId.Scp106 or RoleTypeId.Scp173 or RoleTypeId.Scp3114 => Team.SCPs,
             RoleTypeId.FacilityGuard or RoleTypeId.NtfCaptain or RoleTypeId.NtfPrivate or RoleTypeId.NtfSergeant or RoleTypeId.NtfSpecialist => Team.FoundationForces,
             RoleTypeId.Tutorial => Team.OtherAlive,
             _ => Team.Dead,

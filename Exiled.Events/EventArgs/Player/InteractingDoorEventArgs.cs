@@ -8,27 +8,26 @@
 namespace Exiled.Events.EventArgs.Player
 {
     using API.Features;
-
+    using Exiled.API.Features.Doors;
     using Interactables.Interobjects.DoorUtils;
-
     using Interfaces;
 
     /// <summary>
-    ///     Contains all information before a player interacts with a door.
+    /// Contains all information before a player interacts with a door.
     /// </summary>
     public class InteractingDoorEventArgs : IPlayerEvent, IDoorEvent, IDeniableEvent
     {
         /// <summary>
-        ///     Initializes a new instance of the <see cref="InteractingDoorEventArgs" /> class.
+        /// Initializes a new instance of the <see cref="InteractingDoorEventArgs" /> class.
         /// </summary>
         /// <param name="player">
-        ///     <inheritdoc cref="Player" />
+        /// <inheritdoc cref="Player" />
         /// </param>
         /// <param name="door">
-        ///     <inheritdoc cref="Door" />
+        /// <inheritdoc cref="Door" />
         /// </param>
         /// <param name="isAllowed">
-        ///     <inheritdoc cref="IsAllowed" />
+        /// <inheritdoc cref="IsAllowed" />
         /// </param>
         public InteractingDoorEventArgs(Player player, DoorVariant door, bool isAllowed = true)
         {
@@ -38,17 +37,17 @@ namespace Exiled.Events.EventArgs.Player
         }
 
         /// <summary>
-        ///     Gets or sets a value indicating whether or not the player can interact with the door.
+        /// Gets or sets a value indicating whether or not the player can interact with the door.
         /// </summary>
         public bool IsAllowed { get; set; }
 
         /// <summary>
-        ///     Gets or sets the <see cref="API.Features.Door" /> instance.
+        /// Gets or sets the <see cref="API.Features.Doors.Door" /> instance.
         /// </summary>
         public Door Door { get; set; }
 
         /// <summary>
-        ///     Gets the player who's interacting with the door.
+        /// Gets the player who's interacting with the door.
         /// </summary>
         public Player Player { get; }
     }

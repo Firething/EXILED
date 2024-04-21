@@ -11,7 +11,7 @@ namespace Exiled.Events.Patches.Events.Map
     using System.Reflection.Emit;
 
     using API.Features.Pools;
-
+    using Exiled.Events.Attributes;
     using Exiled.Events.EventArgs.Map;
 
     using Handlers;
@@ -23,9 +23,10 @@ namespace Exiled.Events.Patches.Events.Map
     using static HarmonyLib.AccessTools;
 
     /// <summary>
-    ///     Patches <see cref="DecontaminationController.UpdateSpeaker" />.
-    ///     Adds the <see cref="AnnouncingDecontamination" /> event.
+    /// Patches <see cref="DecontaminationController.UpdateSpeaker" />.
+    /// Adds the <see cref="AnnouncingDecontamination" /> event.
     /// </summary>
+    [EventPatch(typeof(Map), nameof(Map.AnnouncingDecontamination))]
     [HarmonyPatch(typeof(DecontaminationController), nameof(DecontaminationController.UpdateSpeaker))]
     internal static class AnnouncingDecontamination
     {
@@ -41,10 +42,11 @@ namespace Exiled.Events.Patches.Events.Map
                     new(OpCodes.Ldarg_0),
                     new(OpCodes.Ldfld, Field(typeof(DecontaminationController), nameof(DecontaminationController._nextPhase))),
 
-                    // hard
-                    new(OpCodes.Ldarg_1),
+                    // this._curFunction
+                    new(OpCodes.Ldarg_0),
+                    new(OpCodes.Ldfld, Field(typeof(DecontaminationController), nameof(DecontaminationController._curFunction))),
 
-                    // AnnouncingDecontaminationEventArgs ev = new(int, bool)
+                    // AnnouncingDecontaminationEventArgs ev = new(int, PhaseFunction)
                     new(OpCodes.Newobj, GetDeclaredConstructors(typeof(AnnouncingDecontaminationEventArgs))[0]),
 
                     // Map.OnAnnouncingDecontamination(ev)

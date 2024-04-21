@@ -13,7 +13,7 @@ namespace Exiled.Events.Patches.Events.Item
     using API.Features;
     using API.Features.Items;
     using API.Features.Pools;
-
+    using Exiled.Events.Attributes;
     using Exiled.Events.EventArgs.Item;
 
     using HarmonyLib;
@@ -25,10 +25,11 @@ namespace Exiled.Events.Patches.Events.Item
     using static HarmonyLib.AccessTools;
 
     /// <summary>
-    ///     Patches
-    ///     <see cref="AttachmentsServerHandler.ServerReceiveChangeRequest(NetworkConnection, AttachmentsChangeRequest)" />.
-    ///     Adds the <see cref="Handlers.Item.ChangingAttachments" /> event.
+    /// Patches
+    /// <see cref="AttachmentsServerHandler.ServerReceiveChangeRequest(NetworkConnection, AttachmentsChangeRequest)" />.
+    /// Adds the <see cref="Handlers.Item.ChangingAttachments" /> event.
     /// </summary>
+    [EventPatch(typeof(Handlers.Item), nameof(Handlers.Item.ChangingAttachments))]
     [HarmonyPatch(typeof(AttachmentsServerHandler), nameof(AttachmentsServerHandler.ServerReceiveChangeRequest))]
     internal static class ChangingAttachments
     {

@@ -12,7 +12,7 @@ namespace Exiled.Events.Patches.Events.Scp244
 
     using API.Features.DamageHandlers;
     using API.Features.Pools;
-
+    using Exiled.Events.Attributes;
     using Exiled.Events.EventArgs.Scp244;
 
     using Handlers;
@@ -24,9 +24,10 @@ namespace Exiled.Events.Patches.Events.Scp244
     using static HarmonyLib.AccessTools;
 
     /// <summary>
-    ///     Patches <see cref="Scp244DeployablePickup.Damage" /> to add missing logic to the
-    ///     <see cref="Scp244DeployablePickup" />.
+    /// Patches <see cref="Scp244DeployablePickup.Damage" /> to add missing logic to the
+    /// <see cref="Scp244.DamagingScp244" />.
     /// </summary>
+    [EventPatch(typeof(Scp244), nameof(Scp244.DamagingScp244))]
     [HarmonyPatch(typeof(Scp244DeployablePickup), nameof(Scp244DeployablePickup.Damage))]
     internal static class DamagingScp244
     {

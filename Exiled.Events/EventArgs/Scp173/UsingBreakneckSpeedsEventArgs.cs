@@ -8,37 +8,41 @@
 namespace Exiled.Events.EventArgs.Scp173
 {
     using API.Features;
-
+    using Exiled.API.Features.Roles;
     using Interfaces;
 
     /// <summary>
-    ///     Contains all information before an Scp-173 uses breakneck speeds.
+    /// Contains all information before an Scp-173 uses breakneck speeds.
     /// </summary>
-    public class UsingBreakneckSpeedsEventArgs : IPlayerEvent, IDeniableEvent
+    public class UsingBreakneckSpeedsEventArgs : IScp173Event, IDeniableEvent
     {
         /// <summary>
-        ///     Initializes a new instance of the <see cref="UsingBreakneckSpeedsEventArgs" /> class.
+        /// Initializes a new instance of the <see cref="UsingBreakneckSpeedsEventArgs" /> class.
         /// </summary>
         /// <param name="player">
-        ///     <inheritdoc cref="Player" />
+        /// <inheritdoc cref="Player" />
         /// </param>
         /// <param name="isAllowed">
-        ///     <inheritdoc cref="IsAllowed" />
+        /// <inheritdoc cref="IsAllowed" />
         /// </param>
         public UsingBreakneckSpeedsEventArgs(Player player, bool isAllowed = true)
         {
             Player = player;
+            Scp173 = player.Role.As<Scp173Role>();
             IsAllowed = isAllowed;
         }
 
         /// <summary>
-        ///     Gets or sets a value indicating whether or not the player can use breakneck speeds.
+        /// Gets or sets a value indicating whether or not the player can use breakneck speeds.
         /// </summary>
         public bool IsAllowed { get; set; }
 
         /// <summary>
-        ///     Gets the player who's using breakneck speeds.
+        /// Gets the player who's using breakneck speeds.
         /// </summary>
         public Player Player { get; }
+
+        /// <inheritdoc/>
+        public Scp173Role Scp173 { get; }
     }
 }

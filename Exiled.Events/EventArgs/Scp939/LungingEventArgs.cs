@@ -8,36 +8,32 @@
 namespace Exiled.Events.EventArgs.Scp939
 {
     using API.Features;
+    using Exiled.API.Features.Roles;
     using Interfaces;
 
     /// <summary>
-    ///     Contains all information before SCP-939 uses its lunge ability.
+    /// Contains all information before SCP-939 uses its lunge ability.
     /// </summary>
-    public class LungingEventArgs : IPlayerEvent, IDeniableEvent
+    public class LungingEventArgs : IScp939Event
     {
         /// <summary>
-        ///     Initializes a new instance of the <see cref="LungingEventArgs" /> class.
+        /// Initializes a new instance of the <see cref="LungingEventArgs" /> class.
         /// </summary>
         /// <param name="player">
-        ///     <inheritdoc cref="Player" />
+        /// <inheritdoc cref="Player" />
         /// </param>
-        /// <param name="isAllowed">
-        ///     <inheritdoc cref="IsAllowed" />
-        /// </param>
-        public LungingEventArgs(ReferenceHub player, bool isAllowed = true)
+        public LungingEventArgs(Player player)
         {
-            Player = Player.Get(player);
-            IsAllowed = isAllowed;
+            Player = player;
+            Scp939 = Player.Role.As<Scp939Role>();
         }
 
         /// <summary>
-        ///     Gets or sets a value indicating whether or not SCP-939 can lunge.
-        /// </summary>
-        public bool IsAllowed { get; set; }
-
-        /// <summary>
-        ///     Gets the player who's controlling SCP-939.
+        /// Gets the player who's controlling SCP-939.
         /// </summary>
         public Player Player { get; }
+
+        /// <inheritdoc/>
+        public Scp939Role Scp939 { get; }
     }
 }

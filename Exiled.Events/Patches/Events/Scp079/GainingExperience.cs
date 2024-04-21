@@ -11,23 +11,25 @@ namespace Exiled.Events.Patches.Events.Scp079
     using System.Reflection.Emit;
 
     using API.Features.Pools;
-
+    using Exiled.Events.Attributes;
     using Exiled.Events.EventArgs.Scp079;
     using Exiled.Events.Handlers;
 
     using HarmonyLib;
 
+    using PlayerRoles;
     using PlayerRoles.PlayableScps.Scp079;
-    using PlayerRoles.PlayableScps.Subroutines;
+    using PlayerRoles.Subroutines;
 
     using static HarmonyLib.AccessTools;
 
     using Player = API.Features.Player;
 
     /// <summary>
-    ///     Patches <see cref="Scp079TierManager.ServerGrantExperience(int, Scp079HudTranslation)" />.
-    ///     Adds the <see cref="Scp079.GainingExperience" /> event.
+    /// Patches <see cref="Scp079TierManager.ServerGrantExperience(int, Scp079HudTranslation, RoleTypeId)" />.
+    /// Adds the <see cref="Scp079.GainingExperience" /> event.
     /// </summary>
+    [EventPatch(typeof(Scp079), nameof(Scp079.GainingExperience))]
     [HarmonyPatch(typeof(Scp079TierManager), nameof(Scp079TierManager.ServerGrantExperience))]
     internal static class GainingExperience
     {
@@ -46,7 +48,7 @@ namespace Exiled.Events.Patches.Events.Scp079
                 {
                     // Player.Get(base.Owner)
                     new(OpCodes.Ldarg_0),
-                    new(OpCodes.Call, PropertyGetter(typeof(ScpStandardSubroutine<Scp079Role>), nameof(ScpStandardSubroutine<Scp079Role>.Owner))),
+                    new(OpCodes.Call, PropertyGetter(typeof(StandardSubroutine<Scp079Role>), nameof(StandardSubroutine<Scp079Role>.Owner))),
                     new(OpCodes.Call, Method(typeof(Player), nameof(Player.Get), new[] { typeof(ReferenceHub) })),
 
                     // reason
@@ -55,10 +57,13 @@ namespace Exiled.Events.Patches.Events.Scp079
                     // amount
                     new(OpCodes.Ldarg_1),
 
+                    // subject
+                    new(OpCodes.Ldarg_3),
+
                     // true
                     new(OpCodes.Ldc_I4_1),
 
-                    // GainingExperienceEventArgs ev = new(Player, Scp079HudTranslation, int, bool)
+                    // GainingExperienceEventArgs ev = new(Player, Scp079HudTranslation, int, roleType, bool)
                     new(OpCodes.Newobj, GetDeclaredConstructors(typeof(GainingExperienceEventArgs))[0]),
                     new(OpCodes.Dup),
                     new(OpCodes.Dup),
@@ -76,6 +81,11 @@ namespace Exiled.Events.Patches.Events.Scp079
                     new(OpCodes.Ldloc_S, ev.LocalIndex),
                     new(OpCodes.Callvirt, PropertyGetter(typeof(GainingExperienceEventArgs), nameof(GainingExperienceEventArgs.GainType))),
                     new(OpCodes.Starg_S, 2),
+
+                    // subject = ev.RoleType
+                    new(OpCodes.Ldloc_S, ev.LocalIndex),
+                    new(OpCodes.Callvirt, PropertyGetter(typeof(GainingExperienceEventArgs), nameof(GainingExperienceEventArgs.RoleType))),
+                    new(OpCodes.Starg_S, 3),
 
                     // amount = ev.Amount
                     new(OpCodes.Ldloc_S, ev.LocalIndex),

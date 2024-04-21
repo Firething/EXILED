@@ -12,20 +12,21 @@ namespace Exiled.Events.Patches.Events.Scp096
 
     using API.Features;
     using API.Features.Pools;
-
+    using Exiled.Events.Attributes;
     using Exiled.Events.EventArgs.Scp096;
 
     using HarmonyLib;
 
     using PlayerRoles.PlayableScps.Scp096;
-    using PlayerRoles.PlayableScps.Subroutines;
+    using PlayerRoles.Subroutines;
 
     using static HarmonyLib.AccessTools;
 
     /// <summary>
-    ///     Patches <see cref="Scp096TargetsTracker.AddTarget(ReferenceHub, bool)" />.
-    ///     Adds the <see cref="Handlers.Scp096.AddingTarget" /> event.
+    /// Patches <see cref="Scp096TargetsTracker.AddTarget(ReferenceHub, bool)" />.
+    /// Adds the <see cref="Handlers.Scp096.AddingTarget" /> event.
     /// </summary>
+    [EventPatch(typeof(Handlers.Scp096), nameof(Handlers.Scp096.AddingTarget))]
     [HarmonyPatch(typeof(Scp096TargetsTracker), nameof(Scp096TargetsTracker.AddTarget))]
     internal static class AddingTarget
     {
@@ -38,32 +39,26 @@ namespace Exiled.Events.Patches.Events.Scp096
             const int offset = 1;
             int index = newInstructions.FindIndex(instruction => instruction.opcode == OpCodes.Ret) + offset;
 
-            // AddingTargetEventArgs ev = new(Player.Get(base.Owner), Player.Get(target), isForLook, true);
-            //
-            // Handlers.Scp096.OnAddingTarget(ev);
-            //
-            // if (!ev.IsAllowed)
-            //   return;
             newInstructions.InsertRange(
                 index,
                 new[]
                 {
                     // Player.Get(base.Owner)
                     new CodeInstruction(OpCodes.Ldarg_0).MoveLabelsFrom(newInstructions[index]),
-                    new(OpCodes.Call, PropertyGetter(typeof(ScpStandardSubroutine<Scp096Role>), nameof(ScpStandardSubroutine<Scp096Role>.Owner))),
+                    new(OpCodes.Call, PropertyGetter(typeof(StandardSubroutine<Scp096Role>), nameof(StandardSubroutine<Scp096Role>.Owner))),
                     new(OpCodes.Call, Method(typeof(Player), nameof(Player.Get), new[] { typeof(ReferenceHub) })),
 
                     // Player.Get(target)
                     new(OpCodes.Ldarg_1),
                     new(OpCodes.Call, Method(typeof(Player), nameof(Player.Get), new[] { typeof(ReferenceHub) })),
 
-                    // isForLook
+                    // isLooking
                     new(OpCodes.Ldarg_2),
 
                     // true
                     new(OpCodes.Ldc_I4_1),
 
-                    // AddingTargetEventArgs ev = new(Player, Player, bool, bool)
+                    // AddingTargetEventArgs ev = new(scp096, target, isLooking, true)
                     new(OpCodes.Newobj, GetDeclaredConstructors(typeof(AddingTargetEventArgs))[0]),
                     new(OpCodes.Dup),
 

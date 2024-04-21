@@ -8,7 +8,6 @@
 namespace Exiled.API.Features.Items
 {
     using Exiled.API.Features.Pickups;
-    using Exiled.API.Interfaces;
 
     using InventorySystem.Items;
     using InventorySystem.Items.Pickups;
@@ -16,7 +15,7 @@ namespace Exiled.API.Features.Items
 
     using UnityEngine;
 
-    using Scp2176Projectile = Exiled.API.Features.Pickups.Projectiles.Scp2176Projectile;
+    using Scp2176Projectile = Pickups.Projectiles.Scp2176Projectile;
 
     /// <summary>
     /// A wrapper class for <see cref="Scp2176Projectile"/>.
@@ -70,7 +69,7 @@ namespace Exiled.API.Features.Items
 #endif
             ItemPickupBase ipb = Object.Instantiate(Projectile.Base, position, Quaternion.identity);
 
-            ipb.Info = new PickupSyncInfo(Type, position, Quaternion.identity, Weight, ItemSerialGenerator.GenerateNext());
+            ipb.Info = new PickupSyncInfo(Type, Weight, ItemSerialGenerator.GenerateNext());
 
             Scp2176Projectile grenade = (Scp2176Projectile)Pickup.Get(ipb);
 

@@ -1,4 +1,4 @@
-﻿// -----------------------------------------------------------------------
+// -----------------------------------------------------------------------
 // <copyright file="ActivatingSenseEventArgs.cs" company="Exiled Team">
 // Copyright (c) Exiled Team. All rights reserved.
 // Licensed under the CC BY-SA 3.0 license.
@@ -7,16 +7,18 @@
 
 namespace Exiled.Events.EventArgs.Scp049
 {
+    using System;
+
     using API.Features;
+    using Exiled.API.Features.Roles;
+    using Exiled.Events.EventArgs.Interfaces;
 
-    using Interfaces;
-
-    using PlayerRoles.PlayableScps.Scp049;
+    using Scp049Role = API.Features.Roles.Scp049Role;
 
     /// <summary>
-    ///     Contains all information before SCP-049 sense is activated.
+    /// Contains all information before SCP-049 good sense of the doctor is activated.
     /// </summary>
-    public class ActivatingSenseEventArgs : IPlayerEvent, IDeniableEvent
+    public class ActivatingSenseEventArgs : IScp049Event, IDeniableEvent
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ActivatingSenseEventArgs"/> class with information before SCP-049 sense is activated.
@@ -27,11 +29,15 @@ namespace Exiled.Events.EventArgs.Scp049
         public ActivatingSenseEventArgs(Player player, Player target, bool isAllowed = true)
         {
             Player = player;
+            Scp049 = player.Role.As<Scp049Role>();
             Target = target;
             IsAllowed = isAllowed;
-            Cooldown = Scp049SenseAbility.AttemptFailCooldown;
-            Duration = Scp049SenseAbility.EffectDuration;
+            FailedCooldown = (float)Scp049.SenseAbilityFailCooldown;
+            Duration = (float)Scp049.SenseAbilityDuration;
         }
+
+        /// <inheritdoc/>
+        public Scp049Role Scp049 { get; }
 
         /// <summary>
         /// Gets the Player who is playing as SCP-049.
@@ -39,17 +45,23 @@ namespace Exiled.Events.EventArgs.Scp049
         public Player Player { get; }
 
         /// <summary>
-        /// Gets the Player who the sense ability is affecting.
+        /// Gets or sets the Player who the sense ability is affecting.
         /// </summary>
-        public Player Target { get; }
+        public Player Target { get; set; }
 
         /// <summary>
         /// Gets or sets the cooldown of the ability.
         /// </summary>
-        public float Cooldown { get; set; }
+        public float FailedCooldown { get; set; }
 
         /// <summary>
-        /// Gets or sets the duration of the ability.
+        /// Gets or sets the cooldown of the ability.
+        /// </summary>
+        [Obsolete("Use FailedCooldown instead of this")]
+        public float Cooldown { get => FailedCooldown; set => FailedCooldown = value; }
+
+        /// <summary>
+        /// Gets or sets the duration of the Effect.
         /// </summary>
         public float Duration { get; set; }
 

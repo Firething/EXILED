@@ -7,46 +7,51 @@
 
 namespace Exiled.Events.Handlers
 {
+#pragma warning disable SA1623 // Property summary documentation should match accessors
+
     using Exiled.Events.EventArgs.Item;
 
-    using Extensions;
-
-    using static Events;
+    using Exiled.Events.Features;
 
     /// <summary>
-    ///     Item related events.
+    /// Item related events.
     /// </summary>
     public static class Item
     {
         /// <summary>
-        ///     Invoked before the ammo of an firearm are changed.
+        /// Invoked before the ammo of an firearm are changed.
         /// </summary>
-        public static event CustomEventHandler<ChangingAmmoEventArgs> ChangingAmmo;
+        public static Event<ChangingAmmoEventArgs> ChangingAmmo { get; set; } = new ();
 
         /// <summary>
-        ///     Invoked before item attachments are changed.
+        /// Invoked before item attachments are changed.
         /// </summary>
-        public static event CustomEventHandler<ChangingAttachmentsEventArgs> ChangingAttachments;
+        public static Event<ChangingAttachmentsEventArgs> ChangingAttachments { get; set; } = new();
 
         /// <summary>
-        ///     Invoked before receiving a preference.
+        /// Invoked before receiving a preference.
         /// </summary>
-        public static event CustomEventHandler<ReceivingPreferenceEventArgs> ReceivingPreference;
+        public static Event<ReceivingPreferenceEventArgs> ReceivingPreference { get; set; } = new();
 
         /// <summary>
         /// Invoked before a keycard interacts with a door.
         /// </summary>
-        public static event CustomEventHandler<KeycardInteractingEventArgs> KeycardInteracting;
+        public static Event<KeycardInteractingEventArgs> KeycardInteracting { get; set; } = new();
 
         /// <summary>
         /// Invoked before a melee item is swung.
         /// </summary>
-        public static event CustomEventHandler<SwingingEventArgs> Swinging;
+        public static Event<SwingingEventArgs> Swinging { get; set; } = new();
 
         /// <summary>
         /// Invoked before a <see cref="API.Features.Items.Jailbird"/> is charged.
         /// </summary>
-        public static event CustomEventHandler<ChargingJailbirdEventArgs> ChargingJailbird;
+        public static Event<ChargingJailbirdEventArgs> ChargingJailbird { get; set; } = new();
+
+        /// <summary>
+        /// Invoked before a radio pickup is draining battery.
+        /// </summary>
+        public static Event<UsingRadioPickupBatteryEventArgs> UsingRadioPickupBattery { get; set; } = new();
 
         /// <summary>
         /// Called before the ammo of an firearm is changed.
@@ -55,13 +60,13 @@ namespace Exiled.Events.Handlers
         public static void OnChangingAmmo(ChangingAmmoEventArgs ev) => ChangingAmmo.InvokeSafely(ev);
 
         /// <summary>
-        ///     Called before item attachments are changed.
+        /// Called before item attachments are changed.
         /// </summary>
         /// <param name="ev">The <see cref="ChangingAttachmentsEventArgs" /> instance.</param>
         public static void OnChangingAttachments(ChangingAttachmentsEventArgs ev) => ChangingAttachments.InvokeSafely(ev);
 
         /// <summary>
-        ///     Called before receiving a preference.
+        /// Called before receiving a preference.
         /// </summary>
         /// <param name="ev">The <see cref="ReceivingPreferenceEventArgs" /> instance.</param>
         public static void OnReceivingPreference(ReceivingPreferenceEventArgs ev) => ReceivingPreference.InvokeSafely(ev);
@@ -83,5 +88,11 @@ namespace Exiled.Events.Handlers
         /// </summary>
         /// <param name="ev">The <see cref="ChargingJailbirdEventArgs"/> instance.</param>
         public static void OnChargingJailbird(ChargingJailbirdEventArgs ev) => ChargingJailbird.InvokeSafely(ev);
+
+        /// <summary>
+        /// Called before radio pickup is draining battery.
+        /// </summary>
+        /// <param name="ev">The <see cref="UsingRadioPickupBatteryEventArgs"/> instance.</param>
+        public static void OnUsingRadioPickupBattery(UsingRadioPickupBatteryEventArgs ev) => UsingRadioPickupBattery.InvokeSafely(ev);
     }
 }

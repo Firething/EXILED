@@ -13,7 +13,7 @@ namespace Exiled.CreditTags.Enums
     public enum RankType
     {
         /// <summary>
-        /// Nothing.
+        /// No EXILED roles.
         /// </summary>
         None,
 
@@ -41,5 +41,10 @@ namespace Exiled.CreditTags.Enums
         /// EXILED Tournament Champion.
         /// </summary>
         TournamentChampion = 5,
+
+        /// <summary>
+        /// EXILED Donator.
+        /// </summary>
+        Donator = 6,
     }
 }

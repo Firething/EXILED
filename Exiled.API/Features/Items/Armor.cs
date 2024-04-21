@@ -11,14 +11,15 @@ namespace Exiled.API.Features.Items
     using System.Collections.Generic;
     using System.Linq;
 
+    using Exiled.API.Features.Pickups;
     using Exiled.API.Interfaces;
 
-    using InventorySystem.Items;
     using InventorySystem.Items.Armor;
 
     using PlayerRoles;
 
     using Structs;
+    using UnityEngine;
 
     /// <summary>
     /// A wrapper class for <see cref="BodyArmor"/>.
@@ -85,53 +86,38 @@ namespace Exiled.API.Features.Items
         /// <summary>
         /// Gets or sets how strong the helmet on the armor is.
         /// </summary>
-        /// <exception cref="ArgumentOutOfRangeException">When trying to set the value below 0 or above 100.</exception>
         public int HelmetEfficacy
         {
             get => Base.HelmetEfficacy;
-            set
-            {
-                if (value is <= 101 and >= 0)
-                    Base.HelmetEfficacy = value;
-                else
-                    throw new ArgumentOutOfRangeException(nameof(HelmetEfficacy), "Value of armor efficacy must be between 0 and 100.");
-            }
+            set => Base.HelmetEfficacy = value;
         }
 
         /// <summary>
         /// Gets or sets how strong the vest on the armor is.
         /// </summary>
-        /// <exception cref="ArgumentOutOfRangeException">When trying to set the value below 0 or above 100.</exception>
         public int VestEfficacy
         {
             get => Base.VestEfficacy;
-            set
-            {
-                if (value is <= 101 and >= 0)
-                    Base.VestEfficacy = value;
-                else
-                    throw new ArgumentOutOfRangeException(nameof(VestEfficacy), "Value of armor efficacy must be between 0 and 100.");
-            }
+            set => Base.VestEfficacy = value;
         }
 
         /// <summary>
         /// Gets or sets how much faster stamina will drain when wearing this armor.
         /// </summary>
-        /// <exception cref="ArgumentOutOfRangeException">When attempting to set the value below 1 or above 2.</exception>
         public float StaminaUseMultiplier
         {
-            get => Base.StaminaUsageMultiplier;
+            get => Base._staminaUseMultiplier;
             set => Base._staminaUseMultiplier = value;
         }
 
         /// <summary>
         /// Gets or sets how much the users movement speed should be affected when wearing this armor. (higher values = slower movement).
         /// </summary>
-        /// <exception cref="ArgumentOutOfRangeException">When attempting to set the value below 0 or above 1.</exception>
         public float MovementSpeedMultiplier
         {
-            get => Base.MovementSpeedMultiplier;
-            set => Base._movementSpeedMultiplier = value;
+            get => Base._movementSpeedMultiplier;
+            [Obsolete("This Setter was causing desync to client", true)]
+            set => _ = value;
         }
 
         /// <summary>
@@ -154,7 +140,6 @@ namespace Exiled.API.Features.Items
         public IEnumerable<BodyArmor.ArmorCategoryLimitModifier> CategoryLimits
         {
             get => Base.CategoryLimits;
-
             set => Base.CategoryLimits = value.ToArray();
         }
 
@@ -172,5 +157,20 @@ namespace Exiled.API.Features.Items
             VestEfficacy = VestEfficacy,
             HelmetEfficacy = HelmetEfficacy,
         };
+
+        /// <inheritdoc/>
+        internal override void ReadPickupInfo(Pickup pickup)
+        {
+            base.ReadPickupInfo(pickup);
+            if (pickup is Pickups.BodyArmorPickup armorPickup)
+            {
+                HelmetEfficacy = armorPickup.HelmetEfficacy;
+                VestEfficacy = armorPickup.VestEfficacy;
+                RemoveExcessOnDrop = armorPickup.RemoveExcessOnDrop;
+                StaminaUseMultiplier = armorPickup.StaminaUseMultiplier;
+                AmmoLimits = armorPickup.AmmoLimits;
+                CategoryLimits = armorPickup.CategoryLimits;
+            }
+        }
     }
 }

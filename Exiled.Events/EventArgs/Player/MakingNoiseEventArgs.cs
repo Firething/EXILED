@@ -11,36 +11,35 @@ namespace Exiled.Events.EventArgs.Player
 
     using Interfaces;
 
-    using PlayerRoles.FirstPersonControl.Thirdperson;
-
     /// <summary>
-    ///     Contains all information before a player makes noise.
+    /// Contains all information before a player makes noise.
     /// </summary>
-    public class MakingNoiseEventArgs : IPlayerEvent
+    public class MakingNoiseEventArgs : IPlayerEvent, IDeniableEvent
     {
         /// <summary>
-        ///     Initializes a new instance of the <see cref="MakingNoiseEventArgs" /> class.
+        /// Initializes a new instance of the <see cref="MakingNoiseEventArgs" /> class.
         /// </summary>
-        /// <param name="animatedCharacterModel">
-        ///     The <see cref="AnimatedCharacterModel"/> instance.
-        /// </param>
-        /// <param name="distance">
-        ///     <inheritdoc cref="Distance" />
-        /// </param>
-        public MakingNoiseEventArgs(AnimatedCharacterModel animatedCharacterModel, float distance)
+        /// <param name="player"><inheritdoc cref="Player"/></param>
+        /// <param name="distance"><inheritdoc cref="Distance"/></param>
+        /// <param name="isAllowed"><inheritdoc cref="IsAllowed"/></param>
+        public MakingNoiseEventArgs(Player player, float distance, bool isAllowed = true)
         {
-            Player = Player.Get(animatedCharacterModel.OwnerHub);
+            Player = player;
             Distance = distance;
+            IsAllowed = isAllowed;
         }
 
         /// <summary>
-        ///     Gets the player who's making noise.
+        /// Gets the player who's making noise.
         /// </summary>
         public Player Player { get; }
 
         /// <summary>
-        ///     Gets the footsteps distance.
+        /// Gets or sets the footsteps distance.
         /// </summary>
-        public float Distance { get; }
+        public float Distance { get; set; }
+
+        /// <inheritdoc/>
+        public bool IsAllowed { get; set; }
     }
 }

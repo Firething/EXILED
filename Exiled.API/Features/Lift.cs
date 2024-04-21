@@ -12,16 +12,18 @@ namespace Exiled.API.Features
     using System.Linq;
 
     using Exiled.API.Enums;
+    using Exiled.API.Extensions;
+    using Exiled.API.Features.Doors;
     using Exiled.API.Features.Pools;
     using Exiled.API.Interfaces;
-
     using Interactables.Interobjects;
     using Interactables.Interobjects.DoorUtils;
-
     using UnityEngine;
 
     using static Interactables.Interobjects.ElevatorChamber;
     using static Interactables.Interobjects.ElevatorManager;
+
+    using Elevator = Interactables.Interobjects.ElevatorDoor;
 
     /// <summary>
     /// The in-game lift.
@@ -36,7 +38,7 @@ namespace Exiled.API.Features
         /// <summary>
         /// Internal list that contains all ElevatorDoor for current group.
         /// </summary>
-        private readonly List<ElevatorDoor> internalDoorsList = ListPool<ElevatorDoor>.Pool.Get();
+        private readonly List<Elevator> internalDoorsList = ListPool<Elevator>.Pool.Get();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Lift"/> class.
@@ -47,25 +49,24 @@ namespace Exiled.API.Features
             Base = elevator;
             ElevatorChamberToLift.Add(elevator, this);
 
-            foreach (ElevatorDoor door in ElevatorDoor.AllElevatorDoors.First(elevator => elevator.Key == Group).Value)
-                internalDoorsList.Add(door);
+            internalDoorsList.AddRange(Interactables.Interobjects.ElevatorDoor.AllElevatorDoors[Group]);
         }
 
         /// <summary>
         /// Finalizes an instance of the <see cref="Lift"/> class.
         /// </summary>
-        ~Lift() => ListPool<ElevatorDoor>.Pool.Return(internalDoorsList);
+        ~Lift() => ListPool<Elevator>.Pool.Return(internalDoorsList);
 
         /// <summary>
         /// Gets a <see cref="IEnumerable{T}"/> of <see cref="Lift"/> which contains all the <see cref="Lift"/> instances.
         /// </summary>
-        public static IEnumerable<Lift> List => ElevatorChamberToLift.Values;
+        public static IReadOnlyCollection<Lift> List => ElevatorChamberToLift.Values;
 
         /// <summary>
         /// Gets a random <see cref="Lift"/>.
         /// </summary>
         /// <returns><see cref="Lift"/> object.</returns>
-        public static Lift Random => List.ToArray()[UnityEngine.Random.Range(0, ElevatorChamberToLift.Count)];
+        public static Lift Random => List.GetRandomValue();
 
         /// <summary>
         /// Gets the base <see cref="ElevatorChamber"/>.
@@ -75,7 +76,12 @@ namespace Exiled.API.Features
         /// <summary>
         /// Gets a value of the internal doors list.
         /// </summary>
-        public IReadOnlyCollection<ElevatorDoor> Doors => internalDoorsList;
+        public IReadOnlyCollection<Doors.ElevatorDoor> Doors => internalDoorsList.Select(x => Door.Get(x).As<Doors.ElevatorDoor>()).ToList();
+
+        /// <summary>
+        /// Gets a <see cref="IEnumerable{T}"/> of <see cref="Player"/> in the <see cref="Room"/>.
+        /// </summary>
+        public IEnumerable<Player> Players => Player.List.Where(x => Bounds.Contains(x.Position));
 
         /// <summary>
         /// Gets the lift's name.
@@ -168,6 +174,26 @@ namespace Exiled.API.Features
         }
 
         /// <summary>
+        /// Gets the <see cref="RotationTime"/>.
+        /// </summary>
+        public float RotationTime => Base._rotationTime;
+
+        /// <summary>
+        /// Gets the <see cref="DoorOpenTime"/>.
+        /// </summary>
+        public float DoorOpenTime => Base._doorOpenTime;
+
+        /// <summary>
+        /// Gets the <see cref="DoorCloseTime"/>.
+        /// </summary>
+        public float DoorCloseTime => Base._doorCloseTime;
+
+        /// <summary>
+        /// Gets the total <see cref="MoveTime"/>.
+        /// </summary>
+        public float MoveTime => AnimationTime + RotationTime + DoorOpenTime + DoorCloseTime;
+
+        /// <summary>
         /// Gets the <see cref="CurrentLevel"/>.
         /// </summary>
         public int CurrentLevel => Base.CurrentLevel;
@@ -175,7 +201,7 @@ namespace Exiled.API.Features
         /// <summary>
         /// Gets the <see cref="CurrentDestination"/>.
         /// </summary>
-        public ElevatorDoor CurrentDestination => Base.CurrentDestination;
+        public Doors.ElevatorDoor CurrentDestination => Door.Get(Base.CurrentDestination).As<Doors.ElevatorDoor>();
 
         /// <summary>
         /// Gets a <see cref="IEnumerable{T}"/> of <see cref="Lift"/> which contains all the <see cref="Lift"/> instances from the specified <see cref="Status"/>.
@@ -258,23 +284,23 @@ namespace Exiled.API.Features
         {
             bool forceLock = lockReason != DoorLockReason.None;
 
-            foreach (ElevatorDoor door in Doors)
+            foreach (Doors.ElevatorDoor door in Doors)
             {
                 if (!forceLock)
                 {
-                    door.NetworkActiveLocks = 0;
+                    door.DoorLockType = 0;
 
-                    door.ServerChangeLock(DoorLockReason.None, true);
+                    door.ChangeLock(DoorLockType.None);
                 }
                 else
                 {
-                    door.ServerChangeLock(lockReason, true);
+                    door.ChangeLock((DoorLockType)lockReason);
 
                     if (CurrentLevel != 1)
                         TrySetDestination(Group, 1, true);
                 }
 
-                Base.RefreshLocks(Group, door);
+                Base.RefreshLocks(Group, door.Base);
             }
         }
 

@@ -10,7 +10,7 @@ namespace Exiled.Events.EventArgs.Scp079
     using API.Features;
 
     using Exiled.API.Enums;
-
+    using Exiled.API.Features.Roles;
     using Interfaces;
 
     using RelativePositioning;
@@ -18,34 +18,35 @@ namespace Exiled.Events.EventArgs.Scp079
     using UnityEngine;
 
     /// <summary>
-    ///     Contains all information before SCP-079 pings a location.
+    /// Contains all information before SCP-079 pings a location.
     /// </summary>
-    public class PingingEventArgs : IPlayerEvent, IRoomEvent, IDeniableEvent
+    public class PingingEventArgs : IScp079Event, IRoomEvent, IDeniableEvent
     {
         /// <summary>
-        ///     Initializes a new instance of the <see cref="PingingEventArgs" /> class.
+        /// Initializes a new instance of the <see cref="PingingEventArgs" /> class.
         /// </summary>
         /// <param name="hub">
-        ///     <inheritdoc cref="Player" />
+        /// <inheritdoc cref="Player" />
         /// </param>
         /// <param name="position">
-        ///     <inheritdoc cref="Position" />
+        /// <inheritdoc cref="Position" />
         /// </param>
         /// <param name="proccesorindex">
-        ///     <inheritdoc cref="Type" />
+        /// <inheritdoc cref="Type" />
         /// </param>
         /// <param name="powerCost">
-        ///     <inheritdoc cref="AuxiliaryPowerCost" />
+        /// <inheritdoc cref="AuxiliaryPowerCost" />
         /// </param>
         /// <param name="syncNormal">
-        ///     <inheritdoc cref="SyncNormal" />
+        /// <inheritdoc cref="SyncNormal" />
         /// </param>
         /// <param name="isAllowed">
-        ///     <inheritdoc cref="IsAllowed" />
+        /// <inheritdoc cref="IsAllowed" />
         /// </param>
         public PingingEventArgs(ReferenceHub hub, RelativePosition position, int powerCost, byte proccesorindex, Vector3 syncNormal, bool isAllowed = true)
         {
             Player = Player.Get(hub);
+            Scp079 = Player.Role.As<Scp079Role>();
             Position = position.Position;
             Room = Room.Get(Position);
             AuxiliaryPowerCost = powerCost;
@@ -60,22 +61,22 @@ namespace Exiled.Events.EventArgs.Scp079
         public Vector3 SyncNormal { get; }
 
         /// <summary>
-        ///     Gets or sets a value indicating whether or not the event is allowed to continue.
+        /// Gets or sets a value indicating whether or not the event is allowed to continue.
         /// </summary>
         public bool IsAllowed { get; set; }
 
         /// <summary>
-        ///     Gets or sets the amount of auxiliary power required for SCP-079 to ping.
+        /// Gets or sets the amount of auxiliary power required for SCP-079 to ping.
         /// </summary>
         public float AuxiliaryPowerCost { get; set; }
 
         /// <summary>
-        ///     Gets or sets a value indicating the type of ping.
+        /// Gets or sets a value indicating the type of ping.
         /// </summary>
         public PingType Type { get; set; }
 
         /// <summary>
-        ///     Gets or sets a value indicating the position of the ping.
+        /// Gets or sets a value indicating the position of the ping.
         /// </summary>
         public Vector3 Position { get; set; }
 
@@ -85,8 +86,11 @@ namespace Exiled.Events.EventArgs.Scp079
         public Room Room { get; }
 
         /// <summary>
-        ///     Gets the player who's controlling SCP-079.
+        /// Gets the player who's controlling SCP-079.
         /// </summary>
         public Player Player { get; }
+
+        /// <inheritdoc/>
+        public Scp079Role Scp079 { get; }
     }
 }

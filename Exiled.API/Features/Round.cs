@@ -24,6 +24,11 @@ namespace Exiled.API.Features
     public static class Round
     {
         /// <summary>
+        /// Gets a list of players who will be ignored from determining round end.
+        /// </summary>
+        public static HashSet<ReferenceHub> IgnoredPlayers { get; } = new(20); // TODO: Replace ReferenceHub to Player remind to change RoundEnd transpiler
+
+        /// <summary>
         /// Gets the time elapsed from the start of the round.
         /// </summary>
         /// <seealso cref="StartedTime"/>
@@ -55,6 +60,15 @@ namespace Exiled.API.Features
         /// Gets a value indicating whether the round is lobby or not.
         /// </summary>
         public static bool IsLobby => !(IsEnded || IsStarted);
+
+        /// <summary>
+        /// Gets or sets a value indicating the amount of Chaos Targets remaining.
+        /// </summary>
+        public static int ChaosTargetCount
+        {
+            get => RoundSummary.singleton.Network_chaosTargetCount;
+            set => RoundSummary.singleton.Network_chaosTargetCount = value;
+        }
 
         /// <summary>
         /// Gets or sets a value indicating whether the round is locked or not.
@@ -126,6 +140,24 @@ namespace Exiled.API.Features
         {
             get => RoundSummary.ChangedIntoZombies;
             set => RoundSummary.ChangedIntoZombies = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the timer for waiting players in lobby.
+        /// </summary>
+        public static short LobbyWaitingTime
+        {
+            get => RoundStart.singleton.NetworkTimer;
+            set => RoundStart.singleton.NetworkTimer = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the action to do at round end.
+        /// </summary>
+        public static ServerStatic.NextRoundAction NextRoundAction
+        {
+            get => ServerStatic.StopNextRound;
+            set => ServerStatic.StopNextRound = value;
         }
 
         /// <summary>

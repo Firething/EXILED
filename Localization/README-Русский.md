@@ -1,15 +1,15 @@
-# EXILED - библиотека для разработки плагинов
-
-![EXILED CI](https://github.com/galaxy119/EXILED/workflows/EXILED%20CI/badge.svg?branch=2.0.0)
-<a href="https://github.com/Exiled-Team/EXILED/releases">
-<img src="https://img.shields.io/github/release/Exiled-Team/EXILED/all.svg?style=flat" alt="GitHub Releases">
-</a>
-![Github All Downloads](https://img.shields.io/github/downloads/galaxy119/EXILED/total.svg?style=flat)
-![Github Commits](https://img.shields.io/github/commit-activity/w/Exiled-Team/EXILED/dev)
+<h1 align="center">EXILED - EXtended In-runtime Library for External Development</h1>
+<div align="center">
+    
+[<img src="https://img.shields.io/github/actions/workflow/status/Exiled-Team/EXILED/main.yml?style=for-the-badge&logo=githubactions&label=build" alt="CI"/>](https://github.com/Exiled-Team/EXILED/actions/workflows/main.yml/badge.svg?branch=master)
+<a href="https://github.com/Exiled-Team/EXILED/releases"><img src="https://img.shields.io/github/v/release/Exiled-Team/EXILED?display_name=tag&style=for-the-badge&logo=gitbook&label=Release" href="https://github.com/Exiled-Team/EXILED/releases" alt="GitHub Releases"></a>
+<img src="https://img.shields.io/github/downloads/Exiled-Team/EXILED/total?style=for-the-badge&logo=github" alt="Downloads">
+![Github Commits](https://img.shields.io/github/commit-activity/w/Exiled-Team/EXILED/apis-rework?style=for-the-badge&logo=git)
 <a href="https://discord.gg/PyUkWTg">
-<img src="https://img.shields.io/discord/656673194693885975?logo=discord" alt="Chat on Discord">
-</a>
+    <img src="https://img.shields.io/discord/656673194693885975?style=for-the-badge&logo=discord" alt="Chat on Discord">
+</a>    
 
+</div>
 EXILED - низкоуровневый фреймворк для серверов SCP: Secret Laboratory. Он предлагает систему событий, которую разработчики могут использовать для различных манипуляций, изменения кода игры или реализации собственных функций. Все ивенты EXILED сделаны с помощью Harmony, это означает, что для их функционирования не требуется прямого редактирования серверных сборок, что позволяет получить два уникальных преимущества:
 
 - Во-первых, весь код фреймворка может быть свободно опубликован и распространен, что позволяет разработчикам лучше понять, *как* он работает, а также предложить свои предложения по дополнению или изменению его функций.
@@ -34,7 +34,7 @@ EXILED - низкоуровневый фреймворк для серверов
 ### Установка вручную
 - Скачайте **`Exiled.tar.gz` [отсюда](https://github.com/galaxy119/EXILED/releases)**.
 - Распакуйте его содержимое с помощью [7Zip](https://www.7-zip.org/) или [WinRar](https://www.win-rar.com/download.html?&L=6).
-- Переместите папку **`EXILED`** в **`%appdata%`** *Примечание: Эта папка должна находиться в ``C:\Users\(Your_User)\AppData\Roaming``, и ***НЕ*** ``C:\Users\(Your_User)\AppData\Roaming\SCP Secret Laboratory``, и **ЭТО ДОЛЖНО** быть в (. ...)\AppData\Roaming, а не (...)\AppData\!*.
+- Переместите папку **`EXILED`** в **`%appdata%`** *Примечание: Эта папка должна находиться в ``C:\Users\%UserName%\AppData\Roaming``, и ***НЕ*** ``C:\Users\%UserName%\AppData\Roaming\SCP Secret Laboratory``, и **ЭТО ДОЛЖНО** быть в (. ...)\AppData\Roaming, а не (...)\AppData\!*.
 - Переместите **``SCP Secret Laboratory``** в **`%appdata%`**.
   - Windows 10:
     Напишите `%appdata%` в Cortana / значке поиска или в строке проводника Windows.
@@ -45,7 +45,7 @@ EXILED - низкоуровневый фреймворк для серверов
 Вот и все, теперь EXILED должен быть установлен и активен при следующей загрузке вашего сервера. Обратите внимание, что EXILED сам по себе почти ничего не делает, поэтому обязательно получайте новые плагины с **[нашего сервера Discord](https://discord.gg/PyUkWTg)**.
 - Чтобы установить плагин, просто:
   - Скачайте плагин с [*их* страницы релизов](https://i.imgur.com/u34wgPD.jpg) (**он ДОЛЖЕН быть `.dll`!**)
-  - Переместите его в: ``C:\Users\(Your_User)\AppData\Roaming\EXILED\Plugins`` (переместите его сюда, нажав Win + R, а затем написав `%appdata%`)
+  - Переместите его в: ``C:\Users\%UserName%\AppData\Roaming\EXILED\Plugins`` (переместите его сюда, нажав Win + R, а затем написав `%appdata%`)
 
 # Linux
 ### Автоматическая установка ([подробнее](https://github.com/galaxy119/EXILED/blob/master/Exiled.Installer/README.md))
@@ -62,8 +62,8 @@ EXILED - низкоуровневый фреймворк для серверов
 - **Убедитесь**, что вы вошли в систему под пользователем, который запускает SCP-серверы.
 - Скачайте **`Exiled.tar.gz` [отсюда](https://github.com/galaxy119/EXILED/releases)** (SSH: щелкните правой кнопкой мыши и получите ссылку `Exiled.tar.gz`, затем введите: **`wget (link_to_download)`**)
 - Чтобы извлечь его в текущую папку, введите **``tar -xzvf EXILED.tar.gz``**.
-- Переместите **`SCP Secret Laboratory`** папку в **``~/.config``**. *Примечание: Эта папка должна находиться в ``~/.config``, а ***НЕ*** ``~/.config/SCP Secret Laboratory``* (SSH: **`mv SCP Secret Laboratory ~/.config/`**)
-- Переместите папку **`EXILED`** в **``~/.config``**. *Примечание: Эта папка должна находиться в ``~/.config``, и ***NOT*** ``~/.config/SCP Secret Laboratory``* (SSH: **`mv EXILED ~/.config/`**)
+- Переместите **`SCP Secret Laboratory`** папку в **``~/.config``**. *Примечание: Эта папка должна находиться в ``~/.config``, а ***НЕ В*** ``~/.config/SCP Secret Laboratory``* (SSH: **`mv SCP Secret Laboratory ~/.config/`**)
+- Переместите папку **`EXILED`** в **``~/.config``**. *Примечание: Эта папка должна находиться в ``~/.config``, и ***НЕ В*** ``~/.config/SCP Secret Laboratory``* (SSH: **`mv EXILED ~/.config/`**)
 
 ### Устaновка плагинов Linux
 Вот и все, теперь EXILED будет установлен и активен при следующей загрузке вашего сервера. Обратите внимание, что EXILED сам по себе почти ничего не делает, поэтому обязательно получайте новые плагины с **[нашего сервера Discord](https://discord.gg/PyUkWTg)**.
@@ -111,10 +111,10 @@ public void SomeMethod()
 
 public IEnumerator<float> MyCoroutine()
 {
-    for (;;) //бесконечно повторять следующие действия
+    for (;;) // Бесконечно повторять следующие действия
     {
-        Log.Info("Hey I'm a infinite loop!"); //Вызов Log.Info для печати строки в журналы игровой консоли/сервера.
-        yield return Timing.WaitForSeconds(5f); //Говорит coroutine подождать 5 секунд перед продолжением, поскольку это происходит в конце цикла, это эффективно останавливает цикл от повторения на 5 секунд.
+        Log.Info("Эй, Я бесконечный цикл!"); // Вызов Log.Info для печати строки в журналы игровой консоли/сервера.
+        yield return Timing.WaitForSeconds(5f); // Говорит coroutine подождать 5 секунд перед продолжением, поскольку это происходит в конце цикла, это эффективно останавливает цикл от повторения на 5 секунд.
     }
 }
 ```
@@ -123,7 +123,7 @@ public IEnumerator<float> MyCoroutine()
 
 ### Динамические обновления
 EXILED как фреймворк поддерживает динамическую перезагрузку сборок плагинов, не требуя перезагрузки сервера.
-Например, если вы запускаете сервер с единственным плагином `Exiled.Events` и хотите добавить новый, вам не нужно перезагружать сервер для выполнения этой задачи. Вы можете просто использовать команду RemoteAdmin/ServerConsole `reload plugins` для перезагрузки всех плагинов EXILED, включая новые, которые не были загружены ранее.
+Например, если вы запускаете сервер с единственным плагином `Exiled.Events` и хотите добавить новый, вам не нужно перезагружать сервер для выполнения этой задачи. Вы можете просто использовать команду `reload plugins` в RemoteAdmin или в консоли сервера для перезагрузки всех плагинов EXILED, и загрузки новых, которые не были загружены ранее.
 
 Это также означает, что вы можете *обновлять* плагины без полной перезагрузки сервера. Однако есть несколько рекомендаций, которым должен следовать разработчик плагина, чтобы это было сделано правильно:
 

@@ -8,41 +8,49 @@
 namespace Exiled.Events.EventArgs.Player
 {
     using API.Features;
-
+    using API.Features.Items;
     using Interfaces;
+    using InventorySystem.Items.Coin;
 
     /// <summary>
-    ///     Contains all information before a player flips a coin.
+    /// Contains all information before a player flips a coin.
     /// </summary>
-    public class FlippingCoinEventArgs : IPlayerEvent, IDeniableEvent
+    public class FlippingCoinEventArgs : IPlayerEvent, IDeniableEvent, IItemEvent
     {
         /// <summary>
-        ///     Initializes a new instance of the <see cref="FlippingCoinEventArgs" /> class.
+        /// Initializes a new instance of the <see cref="FlippingCoinEventArgs" /> class.
         /// </summary>
         /// <param name="player">
-        ///     <inheritdoc cref="Player" />
+        /// <inheritdoc cref="Player" />
+        /// </param>
+        /// <param name="coin">
+        /// <inheritdoc cref="Item" />
         /// </param>
         /// <param name="isTails">
-        ///     <inheritdoc cref="IsTails" />
+        /// <inheritdoc cref="IsTails" />
         /// </param>
-        public FlippingCoinEventArgs(Player player, bool isTails)
+        public FlippingCoinEventArgs(Player player, Coin coin, bool isTails)
         {
             Player = player;
+            Item = Item.Get(coin);
             IsTails = isTails;
         }
 
         /// <summary>
-        ///     Gets the player who's flipping the coin.
+        /// Gets the player who's flipping the coin.
         /// </summary>
         public Player Player { get; }
 
+        /// <inheritdoc/>
+        public Item Item { get; }
+
         /// <summary>
-        ///     Gets or sets a value indicating whether or not the coin is landing on tails.
+        /// Gets or sets a value indicating whether or not the coin is landing on tails.
         /// </summary>
         public bool IsTails { get; set; }
 
         /// <summary>
-        ///     Gets or sets a value indicating whether or not the coin can be flipped.
+        /// Gets or sets a value indicating whether or not the coin can be flipped.
         /// </summary>
         public bool IsAllowed { get; set; } = true;
     }
